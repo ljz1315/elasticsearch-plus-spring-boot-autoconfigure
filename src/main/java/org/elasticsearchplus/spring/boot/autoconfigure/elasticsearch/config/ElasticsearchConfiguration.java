@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Configuration
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
 
     private final ElasticsearchProperties elasticsearchProperties;
 
@@ -39,14 +39,17 @@ public class ElasticsearchConfiguration {
     @Bean
     @Lazy
     public RestClient restLowClient() {
+        LOGGER.info("init elasticsearch restLowClient ...");
         HttpHost[] httpHostsArr = parseHttpHosts();
         RestClient restClient = RestClient.builder(httpHostsArr).build();
+        LOGGER.info("init elasticsearch restLowClient finished...");
         return restClient;
     }
 
     @Bean
     @Lazy
     public RestHighLevelClient restHighLevelClient(){
+        LOGGER.info("init elasticsearch restHighLevelClient 支持sniffer节点嗅探...");
         HttpHost[] httpHostsArr = parseHttpHosts();
 //        普通RestHighLevelClient，不支持sniffer
 //        RestHighLevelClient client = new RestHighLevelClient(
@@ -84,6 +87,7 @@ public class ElasticsearchConfiguration {
 
         // connect the sniffer and the listener
         sniffOnFailureListener.setSniffer(sniffer);
+        LOGGER.info("init elasticsearch restHighLevelClient 支持sniffer节点嗅探 finished...");
         return client;
     }
 
@@ -93,7 +97,7 @@ public class ElasticsearchConfiguration {
         }
         List<HttpHost> httpHosts = elasticsearchProperties.getHostnames().stream().map(hostname-> new HttpHost(hostname, 9200, "http")).collect(Collectors.toList());
         HttpHost[] httpHostsArr = httpHosts.toArray(new HttpHost[httpHosts.size()]);
-        System.out.println(httpHosts);
+        LOGGER.info("ElasticsearchConfiguration parseHttpHosts httpHosts=[{}]", httpHostsArr);
         return httpHostsArr;
     }
 
